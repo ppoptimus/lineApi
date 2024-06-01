@@ -20,7 +20,7 @@ app.get("/", (req, res) => {
   res.send("สวัสดี express");
 });
 
-app.post("/webhook", (req, res) => {
+app.post("/send", (req, res) => {
 
   axios
     .post(
