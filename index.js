@@ -8,6 +8,7 @@ const PORT = process.env.PORT || 3000;
 const LINE_ACCESS_TOKEN = process.env.LINE_ACCESS_TOKEN;
 
 app.use(cors());
+app.use(bodyParser.json());
 app.use(express.json());
 app.use(
   express.urlencoded({
