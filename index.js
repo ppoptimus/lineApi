@@ -21,16 +21,16 @@ app.get("/", (req, res) => {
 });
 
 app.post("/webhook", (req, res) => {
-  const { userId, message } = req.body;
+
   axios
     .post(
       "https://api.line.me/v2/bot/message/push",
       {
-        to: userId,
+        to: "U6e1614ff8a93a29d3b109fb9983a1dd3",
         messages: [
           {
             type: "text",
-            text: message,
+            text: "message",
           },
         ],
       },
