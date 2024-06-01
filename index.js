@@ -5,7 +5,6 @@ const bodyParser = require("body-parser");
 const axios = require("axios");
 const app = express();
 const PORT = process.env.PORT || 3000;
-const LINE_ACCESS_TOKEN = process.env.LINE_ACCESS_TOKEN;
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -21,6 +20,8 @@ app.get("/", (req, res) => {
 });
 
 app.post("/send", (req, res) => {
+  const LINE_ACCESS_TOKEN =
+    "15aDlaOmPuUBtc0ltAxHw+6XyqngFOuQhU2VJAg23xTs4Af26OABGSLFdPeSoB6IkS+ooCq/pgjoefTodkQZJRzPfy7i5kwT6KhU76mV1Juj8f9gi1cFASVXuf1g4ehS0pzhpM9Vd55iB2gYxY1PnAdB04t89/1O/w1cDnyilFU=";
 
   axios
     .post(
@@ -48,7 +49,7 @@ app.post("/send", (req, res) => {
       console.error("Error sending message:", error);
       res.status(500).json({ success: false, error });
     });
-//   res.send("HTTP POST request sent to the webhook URL!");
+  //   res.send("HTTP POST request sent to the webhook URL!");
 });
 
 app.listen(PORT, () => {
