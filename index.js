@@ -3,8 +3,10 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const axios = require("axios");
+const { ok } = require("assert");
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
+const LINE_ACCESS_TOKEN = process.env.LINE_ACCESS_TOKEN;
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -20,18 +22,15 @@ app.get("/", (req, res) => {
 });
 
 app.post("/send", (req, res) => {
-  const LINE_ACCESS_TOKEN =
-    "15aDlaOmPuUBtc0ltAxHw+6XyqngFOuQhU2VJAg23xTs4Af26OABGSLFdPeSoB6IkS+ooCq/pgjoefTodkQZJRzPfy7i5kwT6KhU76mV1Juj8f9gi1cFASVXuf1g4ehS0pzhpM9Vd55iB2gYxY1PnAdB04t89/1O/w1cDnyilFU=";
-
   axios
     .post(
       "https://api.line.me/v2/bot/message/push",
       {
-        to: "U6e1614ff8a93a29d3b109fb9983a1dd3",
+        to: req.body.userId,
         messages: [
           {
-            type: "text",
-            text: "message",
+            type: req.body.userId,
+            text: req.body.message,
           },
         ],
       },
@@ -50,6 +49,16 @@ app.post("/send", (req, res) => {
       res.status(500).json({ success: false, error });
     });
   //   res.send("HTTP POST request sent to the webhook URL!");
+});
+
+app.post("/webhook", (req, res) => {
+  console.log('req.body =>', req.body.events[0].type)
+  res.status(200).send("OK");
+});
+
+app.post("/fromqr", (req, res) => {
+  console.log('req.body =>', req.body)
+  res.status(200).send("OK");
 });
 
 app.listen(PORT, () => {
