@@ -32,11 +32,6 @@ app.post("/sendResultScan", (req, res) => {
   sendResultScan(req,res);
 });
 
-app.post("/fromqr", (req, res) => {
-  console.log('req.body =>', req.body.userId)
-  res.status(200).send("OK");
-});
-
 app.listen(PORT, () => {
   console.log(`Example app listening at http://localhost:${PORT}`);
 });
