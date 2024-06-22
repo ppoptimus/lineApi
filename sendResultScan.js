@@ -1,32 +1,65 @@
-var axios = require("axios");
+const axios = require("axios");
+const express = require("express");
+const app = express();
+const savePoint = require("./db/savePoint");
+
+app.use(express.json());
 
 const sendResultScan = async (req, res) => {
-  console.log(req.body.to);
-  let userId = req.body.to;
-  let message = req.body.messages[0].text;
-  let headersList = {
-    Accept: "*/*",
-    "Content-Type": "application/json",
-    "Authorization": "Bearer u+UzInq1EMe+NwDM3ERVSjbbu2NB8wQvx6yR3VeBCujuX56SbsFjjAT48jdf5JuRkS+ooCq/pgjoefTodkQZJRzPfy7i5kwT6KhU76mV1Jt2uhNoo7RJhszTdeohBy7z4c43lEbF/09TXOvgxXll1wdB04t89/1O/w1cDnyilFU=",
-  };
+  let userId = req.body.userId;
+  let point = req.body.point;
+  let token = req.body.token;
 
-  let bodyContent = JSON.stringify({
-    to: userId,
-    messages: [
-      {
-        type: "text",
-        text: message,
-      },
-    ],
-  });
-
-  let reqOptions = {
-    url: "https://api.line.me/v2/bot/message/push",
-    method: "POST",
-    headers: headersList,
-    data: bodyContent,
-  };
-  let response = await axios.request(reqOptions);
-  return res.status(200).json(response.data);
+  try {
+    const result = savePoint(userId, point, token);
+    if (result.status === "success") {
+      const response = await axios.post(
+        "https://api.line.me/v2/bot/message/push",
+        {
+          to: userId,
+          messages: [
+            {
+              type: "text",
+              text: `คุณได้รับ ${point} คะแนน`,
+            },
+          ],
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization:
+              "Bearer u+UzInq1EMe+NwDM3ERVSjbbu2NB8wQvx6yR3VeBCujuX56SbsFjjAT48jdf5JuRkS+ooCq/pgjoefTodkQZJRzPfy7i5kwT6KhU76mV1Jt2uhNoo7RJhszTdeohBy7z4c43lEbF/09TXOvgxXll1wdB04t89/1O/w1cDnyilFU=",
+          },
+        }
+      );
+      res.status(200).json(response.data); // ส่งข้อมูล response กลับไปในกรณีที่สำเร็จ
+    } else if (result.status === "UNIQUE") {
+      res.status(208).json(result);
+    } else {
+      res.status(500).json(result);
+    }
+  } catch (error) {
+    if (error.response) {
+      // คำขอถูกส่งและเซิร์ฟเวอร์ตอบกลับด้วยสถานะโค้ดที่ไม่ใช่ 2xx
+      res.status(error.response.status).json({
+        message: "Request failed",
+        data: error.response.data,
+        status: error.response.status,
+        headers: error.response.headers,
+      });
+    } else if (error.request) {
+      // คำขอถูกส่งแต่ไม่มีการตอบกลับ
+      res.status(500).json({
+        message: "No response received from server",
+        request: error.request,
+      });
+    } else {
+      // มีบางอย่างผิดพลาดในการตั้งค่าคำขอ
+      res.status(500).json({
+        message: "Error in setting up request",
+        error: error.message,
+      });
+    }
+  }
 };
 module.exports = sendResultScan;
