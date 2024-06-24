@@ -6,12 +6,13 @@ const app = express();
 app.use(express.json());
 
 const sendResultScan = async (req, res) => {
-  console.log(req.body);
+  // console.log(req.body);
   let userId = req.body.userId;
   let point = req.body.point;
   let token = req.body.token;
 
-  let result = saveUserScanPoint(userId, point, token);
+  let result = await saveUserScanPoint(userId, point, token);
+  console.log("result:",result);
   if (result === "duplicate") {
     res.status(208).send("duplicate");
   } else if (result === "success") {
@@ -59,6 +60,8 @@ const sendResultScan = async (req, res) => {
         });
       }
     }
+  } else {
+    res.status(500).json(result);
   }
 };
 
