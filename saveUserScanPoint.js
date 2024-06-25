@@ -17,8 +17,10 @@ const saveUserScanPoint = async (userId, point, time) => {
   console.log("isExsits = " + isExsits);
   
   if (isExsits) {
+    //--ถ้ามีข้อมูลอยู่แล้วให้ return duplicate--//
     result = "duplicate";
   } else {
+    //--ถ้ายังไม่มีข้อมูล ให้บันทึก--//
     try {
       await usersRef.push({
         userId: userId,
@@ -36,6 +38,7 @@ const saveUserScanPoint = async (userId, point, time) => {
   return result;
 };
 
+//--เช็คว่ามีข้อมูลอยู่แล้วหรือไม่ (สแกน qrcode เดิม)--//
 const getExsitsToken = async (userId, time) => {
   let result = false;
   try {
@@ -43,14 +46,11 @@ const getExsitsToken = async (userId, time) => {
     const usersRef = db.ref('users');
     const query = usersRef.orderByChild('userId').equalTo(userId);
     const snapshot = await query.once('value');
-    const users = snapshot.val();
-
-    console.log("Users snapshot:", users);
-
     const filteredUsers = [];
+
+    //--วนลูปหา time ของ userId นั้นๆ--//
     snapshot.forEach(userSnapshot => {
       const user = userSnapshot.val();
-      console.log("User:", user);
       if (user.time === time) {
         filteredUsers.push(user);
       }

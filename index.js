@@ -19,6 +19,10 @@ app.use(
   })
 );
 
+app.listen(PORT, () => {
+  console.log(`Example app listening at http://localhost:${PORT}`);
+});
+
 app.get("/", (req, res) => {
   res.send("สวัสดี express");
 });
@@ -28,10 +32,8 @@ app.post("/webhook", (req, res) => {
   res.status(200).send("OK");
 });
 
+//--รับข้อมูลจากการแสกน qr code--//
 app.post("/sendResultScan", (req, res) => {
   sendResultScan(req,res);
 });
 
-app.listen(PORT, () => {
-  console.log(`Example app listening at http://localhost:${PORT}`);
-});
